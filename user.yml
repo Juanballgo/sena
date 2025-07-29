@@ -1,0 +1,203 @@
+openapi: 3.0.3
+info:
+  title: User Service API
+  version: 1.0.0
+  description: Microservicio de autenticación y gestión de usuarios
+
+paths:
+  /register:
+    post:
+      summary: Registrar nuevo usuario
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: Usuario registrado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+
+  /users:
+    get:
+      summary: Listar todos los usuarios
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+  /users/{id}:
+    get:
+      summary: Obtener usuario por ID
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Datos del usuario
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+    put:
+      summary: Actualizar usuario
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRequest"
+      responses:
+        "200":
+          description: Usuario actualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+    delete:
+      summary: Eliminar usuario
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Usuario eliminado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - names
+        - lastName
+        - secondLastName
+        - email
+        - password
+        - role
+      properties:
+        names:
+          type: string
+          description: Nombres del usuario
+        lastName:
+          type: string
+          description: Primer apellido
+        secondLastName:
+          type: string
+          description: Segundo apellido
+        email:
+          type: string
+          format: email
+          description: Correo electrónico
+        password:
+          type: string
+          description: Contraseña
+        role:
+          type: string
+          enum:
+            - admin
+            - aprendiz
+          description: Rol del usuario
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        names:
+          type: string
+          description: Nombres del usuario
+        lastName:
+          type: string
+          description: Primer apellido
+        secondLastName:
+          type: string
+          description: Segundo apellido
+        email:
+          type: string
+          format: email
+          description: Correo electrónico
+        role:
+          type: string
+          description: Rol del usuario
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID del usuario
+        names:
+          type: string
+          description: Nombres del usuario
+        lastName:
+          type: string
+        secondLastName:
+          type: string
+        email:
+          type: string
+          format: email
+          description: Correo electrónico
+        role:
+          type: string
+          description: Rol asignado
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: Token JWT de autenticación
+        user:
+          $ref: "#/components/schemas/User"
