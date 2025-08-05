@@ -1,0 +1,7 @@
+com\sena\controller\UsuarioController.class
+com\sena\controller\AuthController.class
+com\sena\config\AppConfig.class
+com\sena\repository\UsuarioRepository.class
+com\sena\dto\Login.class
+com\sena\model\Usuario.class
+com\sena\SenaApplication.class

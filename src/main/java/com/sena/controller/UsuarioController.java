@@ -2,36 +2,46 @@ package com.sena.controller;
 
 import com.sena.model.Usuario;
 import com.sena.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
-
-
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
+
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioController(UsuarioRepository usuarioRepository) {
+    @Autowired
+    public UsuarioController(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    // 1. POST: Registrar nuevo usuario
+    // ✅ POST: Registrar nuevo usuario
     @PostMapping
-    public Usuario create(@RequestBody Usuario usuario) {
-        return usuarioRepository.save(usuario);
+    public ResponseEntity<?> create(@RequestBody Usuario usuario) {
+        if (usuario.getPassword() == null || usuario.getPassword().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("La contraseña no puede ser nula o vacía.");
+        }
+
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        Usuario saved = usuarioRepository.save(usuario);
+        return ResponseEntity.ok(saved);
     }
 
-    // 2. GET: Listar todos los usuarios
+    // GET: Listar todos los usuarios
     @GetMapping
     public List<Usuario> getAll() {
         return usuarioRepository.findAll();
     }
 
-    // 3. GET: Obtener usuario por ID
+    // GET: Obtener usuario por ID
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> getById(@PathVariable String id) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
@@ -39,7 +49,7 @@ public class UsuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // 4. PUT: Actualizar usuario por ID
+    // PUT: Actualizar usuario por ID
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> update(@PathVariable String id, @RequestBody Usuario usuarioActualizado) {
         return usuarioRepository.findById(id)
@@ -57,7 +67,7 @@ public class UsuarioController {
                         usuario.setEmail(usuarioActualizado.getEmail());
 
                     if (usuarioActualizado.getPassword() != null)
-                        usuario.setPassword(usuarioActualizado.getPassword());
+                        usuario.setPassword(passwordEncoder.encode(usuarioActualizado.getPassword()));
 
                     if (usuarioActualizado.getRole() != null)
                         usuario.setRole(usuarioActualizado.getRole());
@@ -68,7 +78,7 @@ public class UsuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // 5. DELETE: Eliminar usuario por ID
+    // DELETE: Eliminar usuario por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         if (usuarioRepository.existsById(id)) {

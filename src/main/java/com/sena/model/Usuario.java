@@ -16,9 +16,10 @@ public class Usuario {
     private String email;
 
     @JsonIgnore // No exponer la contraseña en las respuestas JSON
-    private String password;
+    private String Password;
     @JsonIgnore // No exponer el rol en las respuestas JSON
     private String role; // valores: "admin" o "user"
+
 
 
     // Getters y Setters
@@ -63,11 +64,11 @@ public class Usuario {
     }
 
     public String getPassword() {
-        return password;
+        return Password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPassword(String Password) {
+        this.Password = Password;
     }
 
     public String getRole() {
