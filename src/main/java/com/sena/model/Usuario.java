@@ -20,8 +20,19 @@ public class Usuario {
     @JsonIgnore // No exponer el rol en las respuestas JSON
     private String role; // valores: "admin" o "user"
 
+    // semillero prueba //
 
+    private String semillero;
 
+    public String getSemillero() {
+    return semillero;
+    }
+
+    public void setSemillero(String semillero) {
+    this.semillero = semillero;
+    }
+
+    //fin prueba 
     // Getters y Setters
     public String getId() {
         return id;

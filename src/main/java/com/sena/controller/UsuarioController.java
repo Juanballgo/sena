@@ -24,15 +24,20 @@ public class UsuarioController {
     }
 
     // ✅ POST: Registrar nuevo usuario
-    @PostMapping
-    public ResponseEntity<?> create(@RequestBody Usuario usuario) {
-        if (usuario.getPassword() == null || usuario.getPassword().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("La contraseña no puede ser nula o vacía.");
-        }
+@PostMapping
+public ResponseEntity<?> create(@RequestBody Usuario usuario) {
+    if (usuario.getPassword() == null || usuario.getPassword().trim().isEmpty()) {
+        return ResponseEntity.badRequest().body("La contraseña no puede ser nula o vacía.");
+    }
 
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        Usuario saved = usuarioRepository.save(usuario);
-        return ResponseEntity.ok(saved);
+    // Verificar si el email ya está registrado
+    if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+        return ResponseEntity.badRequest().body("El email ya está registrado.");
+    }
+
+    usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+    Usuario saved = usuarioRepository.save(usuario);
+    return ResponseEntity.ok(saved);
     }
 
     // GET: Listar todos los usuarios
