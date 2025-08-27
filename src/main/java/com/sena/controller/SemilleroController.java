@@ -1,12 +1,14 @@
 package com.sena.controller;
 
 import com.sena.model.Semillero;
+import com.sena.dto.SemilleroConUsuariosDTO;
 import com.sena.repository.SemilleroRepositorio;
 import com.sena.model.Usuario;
 import com.sena.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.stream.Collectors;
 
 import java.util.List;
 import java.util.Optional;
@@ -58,5 +60,20 @@ public class SemilleroController {
     @GetMapping
     public List<Semillero> getAll() {
         return semilleroRepositorio.findAll();
+    }
+
+    @GetMapping("/con-usuarios")
+    public ResponseEntity<?> getSemillerosConUsuarios() {
+        List<Semillero> semilleros = semilleroRepositorio.findAll();
+
+        List<SemilleroConUsuariosDTO> resultado = semilleros.stream().map(semillero -> {
+            List<Usuario> usuarios = usuarioRepository.findAll().stream()
+                    .filter(u -> semillero.getId().equals(u.getSemillero()))
+                    .collect(Collectors.toList());
+
+            return new SemilleroConUsuariosDTO(semillero, usuarios);
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(resultado);
     }
 }

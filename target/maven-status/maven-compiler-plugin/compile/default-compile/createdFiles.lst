@@ -9,4 +9,5 @@ com\sena\controller\UsuarioController.class
 com\sena\config\AppConfig.class
 com\sena\repository\SemilleroRepositorio.class
 com\sena\repository\UsuarioRepository.class
+com\sena\security\SecurityConfig.class
 com\sena\controller\SemilleroController.class

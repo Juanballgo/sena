@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import com.sena.dto.LoginResponse;
 import com.sena.security.JwtUtil;
 
+import io.jsonwebtoken.Claims;
+
 import java.util.Optional;
 
 @RestController
@@ -48,7 +50,6 @@ public class AuthController {
 
                 LoginResponse response = new LoginResponse(
                         "Inicio de sesión exitoso",
-                        usuario.getId(),
                         usuario.getNames(),
                         usuario.getLastName(),
                         usuario.getEmail(),
@@ -97,4 +98,20 @@ public class AuthController {
             return ResponseEntity.status(404).body("Usuario no encontrado");
         }
     }
+    @GetMapping("/decode")
+public ResponseEntity<?> decode(@RequestParam String token) {
+    // Si el token viene con "Bearer " al inicio, quítalo:
+    if (token.startsWith("Bearer ")) {
+        token = token.substring(7);
+    }
+    Claims claims = JwtUtil.decodeToken(token);
+    String userId = claims.get("userId", String.class);
+    String role = claims.get("role", String.class);
+    String email = claims.getSubject();
+
+    // Puedes devolver los datos como JSON
+    return ResponseEntity.ok(
+        String.format("userId: %s, role: %s, email: %s", userId, role, email)
+    );
+}
 }
