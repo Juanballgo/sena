@@ -1,6 +1,7 @@
 package com.sena.dto;
 
 public class LoginResponse {
+    private String message;
     private String id;
     private String names;
     private String lastName;
@@ -10,6 +11,7 @@ public class LoginResponse {
 
     // Constructor
     public LoginResponse(String message, String id, String names, String lastName, String email, String token, String semillero) {
+        this.message = message;
         this.id = id;
         this.names = names;
         this.lastName = lastName;
@@ -19,6 +21,7 @@ public class LoginResponse {
     }
 
     // Getters y setters
+    public String getMessage() { return message; }
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     public String getNames() { return names; }
